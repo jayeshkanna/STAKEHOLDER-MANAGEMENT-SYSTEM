@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            text-align: center; 
+            margin: 40px; 
+            color: #fff;
+        }
+        .container { 
+            width: 80%; 
+            margin: auto; 
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        h2, h3 { color: #fff; }
+        .section { margin-top: 20px; text-align: left; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            color: #333;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th { background-color: #4a90e2; color: white; }
+        .delete-btn, button {
+            transition: 0.3s ease;
+            cursor: pointer; 
+            border-radius: 5px;
+        }
+        .delete-btn {
+            color: white; 
+            background: red; 
+            padding: 8px 12px; 
+            border: none; 
+        }
+        .delete-btn:hover {
+            background: darkred;
+        }
+        button { 
+            background: #28a745; 
+            color: white; 
+            border: none; 
+            padding: 10px;
+        }
+        button:hover { 
+            background: #218838;
+            transform: scale(1.05);
+        }
+        .logout-btn { 
+            background: #dc3545; 
+            padding: 12px 24px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            transition: 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 10px rgba(255, 255, 255, 0.2);
+        }
+        .feedback-chart canvas {
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Dashboard</h2>
+        <a href="{{ url_for('login') }}" class="logout-btn">Logout</a>
+
+        <!-- Feedback Charts -->
+        <div class="feedback-chart card">
+            <h3>Feedback Analysis</h3>
+            <canvas id="feedbackCountChart"></canvas>
+            <canvas id="feedbackScoreChart"></canvas>
+        </div>
+
+        <!-- Manage Circulars -->
+        <div class="section">
+            <h3>Manage Circulars</h3>
+            <div class="card">
+                <form method="POST" action="{{ url_for('admin_dashboard') }}">
+                    <input type="text" name="title" placeholder="Circular Title" required>
+                    <textarea name="content" placeholder="Circular Content" rows="3" required></textarea>
+                    
+                    <select name="role" required>
+                        <option value="Student">Students</option>
+                        <option value="Faculty">Faculty</option>
+                        <option value="Alumni">Alumni</option>
+                        <option value="Parent">Parents</option>
+                        <option value="Industry">Industry</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    
+                    <button type="submit">Post Circular</button>
+                </form>
+            </div>
+            {% if circulars %}
+                <table>
+                    <tr>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for circular in circulars %}
+                        <tr>
+                            <td>{{ circular.title }}</td>
+                            <td>{{ circular.content }}</td>
+                            <td>{{ circular.role }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('delete_circular', id=circular.id) }}">
+                                    <button type="submit" class="delete-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No circulars available.</p>
+            {% endif %}
+        </div>
+
+        <!-- Feedback Report -->
+        <div class="section">
+            <h3>Feedbacks Received</h3>
+            <button onclick="downloadReport()">Download Report</button>
+            {% if feedbacks %}
+                <table id="feedbackTable">
+                    <tr>
+                        <th>Role</th>
+                        <th>Feedback</th>
+                        <th>Score</th>
+                    </tr>
+                    {% for feedback in feedbacks %}
+                        <tr>
+                            <td>{{ feedback.role }}</td>
+                            <td>{{ feedback.feedback_text }}</td>
+                            <td>{{ feedback.score if feedback.score else 'N/A' }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No feedback received yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Feedback Data from Backend
+        var roles = {{ roles | tojson }};
+        var feedbackCounts = {{ feedback_counts | tojson }};
+        var averageScores = {{ average_scores | tojson }};
+
+        // Feedback Count Chart
+        var ctx1 = document.getElementById('feedbackCountChart').getContext('2d');
+        var feedbackCountChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: roles,
+                datasets: [{
+                    label: 'Feedback Count',
+                    data: feedbackCounts,
+                    backgroundColor: '#007bff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // Feedback Score Chart
+        var ctx2 = document.getElementById('feedbackScoreChart').getContext('2d');
+        var feedbackScoreChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: roles,
+                datasets: [{
+                    label: 'Average Score',
+                    data: averageScores,
+                    backgroundColor: '#28a745'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // Function to Download Report
+        function downloadReport() {
+            let table = document.getElementById("feedbackTable");
+            let rows = table.getElementsByTagName("tr");
+            let csv = [];
+
+            for (let i = 0; i < rows.length; i++) {
+                let row = [],
+                    cols = rows[i].querySelectorAll("td, th");
+
+                for (let j = 0; j < cols.length; j++) 
+                    row.push(cols[j].innerText);
+                
+                csv.push(row.join(","));
+            }
+
+            let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            let downloadLink = document.createElement("a");
+            downloadLink.download = "feedback_report.csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+        }
+    </script>
+</body>
+</html>

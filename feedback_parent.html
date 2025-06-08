@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Feedback</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            text-align: center; 
+            margin: 40px; 
+            color: white; 
+            animation: fadeIn 1s ease-in-out;
+        }
+        .container { 
+            width: 50%; 
+            margin: auto; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3); 
+            color: #333; 
+        }
+        h2 { color: #1e3c72; }
+        textarea, select, button, input {
+            width: 100%; 
+            padding: 12px; 
+            margin: 12px 0; 
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button { 
+            background: #28a745; 
+            color: white; 
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function prepareFeedback() {
+            let feedbackText = `
+                Parent Name: ${document.getElementById('parent_name').value}
+                Student Name: ${document.getElementById('student_name').value}
+                Relationship with Student: ${document.getElementById('relationship').value}
+                Academic Year & Semester: ${document.getElementById('academic_year').value}
+                Satisfaction with Curriculum: ${document.querySelector('input[name="q1"]:checked')?.value || 'Not selected'}
+                Suggestions for Improvement: ${document.getElementById('suggestions').value}
+            `;
+            document.getElementById('feedback_text').value = feedbackText;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Parent Feedback</h2>
+        <form action="{{ url_for('feedback') }}" method="POST" onsubmit="prepareFeedback()">
+            
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="role" value="{{ role }}">
+            <input type="hidden" id="feedback_text" name="feedback_text">
+
+            <label>Parent Name</label>
+            <input type="text" id="parent_name" name="parent_name" required>
+
+            <label>Student Name</label>
+            <input type="text" id="student_name" name="student_name" required>
+
+            <label>Relationship with Student</label>
+            <input type="text" id="relationship" name="relationship" required>
+
+            <label>Academic Year & Semester</label>
+            <input type="text" id="academic_year" name="academic_year" required>
+
+            <h4>Curriculum Satisfaction (5-Point Scale)</h4>
+            <table>
+                <tr>
+                    <td>The curriculum meets my expectations</td>
+                    <td><input type="radio" name="q1" value="5"></td>
+                    <td><input type="radio" name="q1" value="4"></td>
+                    <td><input type="radio" name="q1" value="3"></td>
+                    <td><input type="radio" name="q1" value="2"></td>
+                    <td><input type="radio" name="q1" value="1"></td>
+                </tr>
+            </table>
+
+            <label>Suggestions for Improvement</label>
+            <textarea id="suggestions" name="suggestions" rows="3"></textarea>
+
+            <label>Overall Score (1-5)</label>
+            <input type="number" name="score" min="1" max="5" required>
+
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALUMNI Feedback</title>
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            text-align: center; 
+            margin: 40px; 
+            color: white; 
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .container { 
+            width: 50%; 
+            margin: auto; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); 
+            color: #333; 
+            animation: slideIn 1s ease-in-out;
+        }
+        @keyframes slideIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        h2 { color: #1e3c72; }
+        textarea, select, input, button {
+            width: 100%; 
+            padding: 12px; 
+            margin: 12px 0; 
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        textarea { height: 120px; resize: none; }
+        select { cursor: pointer; }
+        button { 
+            background: #28a745; 
+            color: white; 
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        button:hover { transform: scale(1.1); filter: brightness(1.2); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>ALUMNI Feedback</h2>
+        <form action="{{ url_for('feedback') }}" method="POST" onsubmit="prepareFeedback()">
+            <input type="text" id="alumni_name" placeholder="Name of the Alumni" required>
+            <input type="text" id="register_number" placeholder="Register Number" required>
+            <input type="text" id="designation" placeholder="Designation" required>
+            <textarea id="address" placeholder="Address" required></textarea>
+            <input type="tel" id="phone_number" placeholder="Phone Number" required>
+            <input type="email" id="email" placeholder="Email ID" required>
+            
+            <h4>Curriculum Feedback (5-Point Scale)</h4>
+            <table>
+                <tr>
+                    <th>Criteria</th>
+                    <th>Excellent (5)</th>
+                    <th>Very Good (4)</th>
+                    <th>Good (3)</th>
+                    <th>Average (2)</th>
+                    <th>Poor (1)</th>
+                </tr>
+                <tr>
+                    <td>Adequateness of courses</td>
+                    <td><input type="radio" name="q1" value="5"></td>
+                    <td><input type="radio" name="q1" value="4"></td>
+                    <td><input type="radio" name="q1" value="3"></td>
+                    <td><input type="radio" name="q1" value="2"></td>
+                    <td><input type="radio" name="q1" value="1"></td>
+                </tr>
+                <tr>
+                    <td>Effectiveness of syllabus</td>
+                    <td><input type="radio" name="q2" value="5"></td>
+                    <td><input type="radio" name="q2" value="4"></td>
+                    <td><input type="radio" name="q2" value="3"></td>
+                    <td><input type="radio" name="q2" value="2"></td>
+                    <td><input type="radio" name="q2" value="1"></td>
+                </tr>
+                <tr>
+                    <td>Alignment with professional standards</td>
+                    <td><input type="radio" name="q3" value="5"></td>
+                    <td><input type="radio" name="q3" value="4"></td>
+                    <td><input type="radio" name="q3" value="3"></td>
+                    <td><input type="radio" name="q3" value="2"></td>
+                    <td><input type="radio" name="q3" value="1"></td>
+                </tr>
+            </table>
+            
+            <textarea id="skills" placeholder="Mention skills or knowledge areas to include"></textarea>
+            <textarea id="improvement" placeholder="Specify areas for curriculum improvement"></textarea>
+            <textarea id="feedback_text" name="feedback_text" hidden></textarea>
+            
+            <label><strong>Overall Score (1-5):</strong></label>
+            <select id="score" name="score"  required>
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+            </select>
+            
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </div>
+
+    <script>
+        function prepareFeedback() {
+            let feedbackData = `
+                Name: ${document.getElementById('alumni_name').value}\n
+                Register Number: ${document.getElementById('register_number').value}\n
+                Designation: ${document.getElementById('designation').value}\n
+                Address: ${document.getElementById('address').value}\n
+                Phone Number: ${document.getElementById('phone_number').value}\n
+                Email: ${document.getElementById('email').value}\n
+                Curriculum Feedback:\n
+                Adequateness of courses: ${document.querySelector('input[name="q1"]:checked')?.value || 'Not selected'}\n
+                Effectiveness of syllabus: ${document.querySelector('input[name="q2"]:checked')?.value || 'Not selected'}\n
+                Alignment with professional standards: ${document.querySelector('input[name="q3"]:checked')?.value || 'Not selected'}\n
+                Suggested Skills: ${document.getElementById('skills').value}\n
+                Areas for Improvement: ${document.getElementById('improvement').value}\n
+                Overall Score: ${document.getElementById('score').value}`;
+            document.getElementById('feedback_text').value = feedbackData;
+        }
+    </script>
+</body>
+</html>

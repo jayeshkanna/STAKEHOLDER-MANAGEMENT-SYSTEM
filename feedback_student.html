@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Feedback</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            color: black;
+            animation: slideUp 0.8s ease-in-out;
+        }
+
+        textarea, input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        textarea:hover, input:hover, select:hover {
+            border-color: #28a745;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-container input {
+            width: auto;
+            margin-left: 10px;
+        }
+    </style>
+    <script>
+        function prepareFeedback() {
+            let isAnonymous = document.getElementById('is_anonymous').checked;
+
+            let feedbackData = `
+                Name: ${isAnonymous ? 'Anonymous' : document.getElementById('student_name').value}\n
+                Roll Number: ${isAnonymous ? 'Anonymous' : document.getElementById('roll_number').value}\n
+                Department: ${isAnonymous ? 'Anonymous' : document.getElementById('department').value}\n
+                Year: ${isAnonymous ? 'Anonymous' : document.getElementById('year').value}\n
+                Hosteller/Day Scholar: ${document.getElementById('residency').value}\n
+                Curriculum Feedback:\n
+                Adequateness of courses: ${document.querySelector('input[name="q1"]:checked')?.value || 'Not selected'}\n
+                Effectiveness of syllabus: ${document.querySelector('input[name="q2"]:checked')?.value || 'Not selected'}\n
+                Alignment with professional standards: ${document.querySelector('input[name="q3"]:checked')?.value || 'Not selected'}\n
+                Suggested Skills: ${document.getElementById('skills').value}\n
+                Areas for Improvement: ${document.getElementById('improvement').value}`;
+
+            document.getElementById('feedback_text').value = feedbackData;
+        }
+
+        function toggleAnonymous() {
+            let isAnonymous = document.getElementById('is_anonymous').checked;
+            let fields = ['student_name', 'roll_number', 'department', 'year'];
+
+            fields.forEach(id => {
+                document.getElementById(id).value = isAnonymous ? 'Anonymous' : '';
+                document.getElementById(id).disabled = isAnonymous;
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Student Feedback</h2>
+        <form action="{{ url_for('feedback') }}" method="POST">
+            <input type="text" id="student_name" name="student_name" placeholder="Your Name" required>
+            <input type="text" id="roll_number" name="roll_number" placeholder="Roll Number" required>
+            <input type="text" id="department" name="department" placeholder="Department" required>
+            <input type="text" id="year" name="year" placeholder="Year of Study" required>
+            <label>Residency:</label>
+            <select id="residency" name="residency" required>
+                <option value="Hosteller">Hosteller</option>
+                <option value="Day Scholar">Day Scholar</option>
+            </select>
+            
+            <!-- Feedback Questions -->
+            <label>Adequateness of courses:</label>
+            <input type="radio" name="q1" value="Excellent"> Excellent
+            <input type="radio" name="q1" value="Good"> Good
+            <input type="radio" name="q1" value="Average"> Average
+            <input type="radio" name="q1" value="Poor"> Poor
+
+            <label>Effectiveness of syllabus:</label>
+            <input type="radio" name="q2" value="Excellent"> Excellent
+            <input type="radio" name="q2" value="Good"> Good
+            <input type="radio" name="q2" value="Average"> Average
+            <input type="radio" name="q2" value="Poor"> Poor
+
+            <label>Alignment with professional standards:</label>
+            <input type="radio" name="q3" value="Excellent"> Excellent
+            <input type="radio" name="q3" value="Good"> Good
+            <input type="radio" name="q3" value="Average"> Average
+            <input type="radio" name="q3" value="Poor"> Poor
+
+            <input type="text" id="skills" name="skills" placeholder="Suggested Skills">
+            <input type="text" id="improvement" name="improvement" placeholder="Areas for Improvement">
+            
+            <label>Overall Score (This will not be saved in feedback text)</label>
+            <input type="number" id="score" name="score" placeholder="Overall Score">
+            
+            <textarea id="feedback_text" name="feedback_text" placeholder="Your feedback will appear here..." required></textarea>
+
+            <div class="checkbox-container">
+                <label><input type="checkbox" id="is_anonymous" name="is_anonymous" onclick="toggleAnonymous()"> Submit anonymously</label>
+            </div>
+
+            <button type="button" onclick="prepareFeedback()">Prepare Feedback</button>
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </div>
+</body>
+</html>

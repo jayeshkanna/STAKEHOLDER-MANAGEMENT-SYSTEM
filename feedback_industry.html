@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry Feedback</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            text-align: center; 
+            background-color: #eef2f3; 
+        }
+        .container { 
+            width: 90%; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+        }
+        textarea, select, input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            box-sizing: border-box; 
+        }
+        button { 
+            padding: 12px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 16px; 
+            border-radius: 5px; 
+        }
+        button:hover { 
+            background: #0056b3; 
+        }
+        label { 
+            display: block; 
+            margin-top: 10px; 
+            font-weight: bold; 
+            text-align: left; 
+        }
+        .checkbox-label { 
+            display: flex; 
+            align-items: center; 
+            justify-content: left; 
+            margin: 10px 0; 
+        }
+        .checkbox-label input { 
+            width: auto; 
+            margin-right: 10px; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0; 
+        }
+        table, th, td { 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            text-align: center; 
+        }
+    </style>
+    <script>
+        function prepareFeedback() {
+            let feedbackData = `
+                Industry Name: ${document.getElementById('industry_name').value}\n
+                Name of the Academician: ${document.getElementById('academician_name').value}\n
+                Designation: ${document.getElementById('designation').value}\n
+                Address: ${document.getElementById('address').value}\n
+                Phone Number: ${document.getElementById('phone_number').value}\n
+                Email: ${document.getElementById('email').value}\n
+                Curriculum Feedback:\n
+                Rate the content of the curriculum: ${document.querySelector('input[name="q1"]:checked')?.value || 'Not selected'}\n
+                Structure and components of the curriculum: ${document.querySelector('input[name="q2"]:checked')?.value || 'Not selected'}\n
+                Areas for curriculum improvement: ${document.getElementById('areas_improvement').value}\n
+                Domain Feedback (Course & Code): ${document.getElementById('domain_feedback').value}\n
+                Feedback on course content: ${document.getElementById('course_feedback').value}\n
+                Suggestions for modification: ${document.getElementById('modification_suggestions').value}\n
+                Submit anonymously: ${document.querySelector('input[name="is_anonymous"]').checked ? 'Yes' : 'No'}
+            `;
+            document.getElementById('feedback_text').value = feedbackData;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Industry Feedback</h2>
+        <form action="{{ url_for('feedback') }}" method="POST" onsubmit="prepareFeedback()">
+            <label for="industry_name">Industry Name:</label>
+            <input type="text" id="industry_name" name="industry_name" placeholder="Enter your industry name..." required>
+
+            <label for="academician_name">Name of the Academician:</label>
+            <input type="text" id="academician_name" name="academician_name" placeholder="Enter name..." required>
+
+            <label for="designation">Designation:</label>
+            <input type="text" id="designation" name="designation" placeholder="Enter designation..." required>
+
+            <label for="address">Address:</label>
+            <textarea id="address" name="address" placeholder="Enter address..." required></textarea>
+
+            <label for="phone_number">Phone Number:</label>
+            <input type="tel" id="phone_number" name="phone_number" placeholder="Enter phone number..." required>
+
+            <label for="email">Email ID:</label>
+            <input type="email" id="email" name="email" placeholder="Enter email ID..." required>
+
+            <h4 class="mt-4">Curriculum Feedback (5-Point Scale)</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Excellent (5)</th>
+                        <th>Very Good (4)</th>
+                        <th>Good (3)</th>
+                        <th>Average (2)</th>
+                        <th>Poor (1)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rate the content of the curriculum</td>
+                        <td><input type="radio" name="q1" value="5"></td>
+                        <td><input type="radio" name="q1" value="4"></td>
+                        <td><input type="radio" name="q1" value="3"></td>
+                        <td><input type="radio" name="q1" value="2"></td>
+                        <td><input type="radio" name="q1" value="1"></td>
+                    </tr>
+                    <tr>
+                        <td>Structure and components of the curriculum</td>
+                        <td><input type="radio" name="q2" value="5"></td>
+                        <td><input type="radio" name="q2" value="4"></td>
+                        <td><input type="radio" name="q2" value="3"></td>
+                        <td><input type="radio" name="q2" value="2"></td>
+                        <td><input type="radio" name="q2" value="1"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <label for="areas_improvement">Areas for curriculum improvement:</label>
+            <textarea id="areas_improvement" name="areas_improvement" placeholder="Enter suggestions..."></textarea>
+
+            <label for="domain_feedback">Domain feedback (Course & Code):</label>
+            <input type="text" id="domain_feedback" name="domain_feedback" placeholder="Enter course & code...">
+
+            <label for="course_feedback">Feedback on course content:</label>
+            <textarea id="course_feedback" name="course_feedback" placeholder="Enter feedback..."></textarea>
+
+            <label for="modification_suggestions">Suggestions for modification:</label>
+            <textarea id="modification_suggestions" name="modification_suggestions" placeholder="Enter suggestions..."></textarea>
+
+            <label for="overall_rating">Overall Rating (1-5):</label>
+            <select id="overall_rating" name="score" required>
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+            </select>
+
+            <label class="checkbox-label">
+                <input type="checkbox" name="is_anonymous"> Submit anonymously
+            </label>
+
+            <textarea id="feedback_text" name="feedback_text" hidden></textarea>
+
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Stakeholder Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: white;
+            text-align: center;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f8b400;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #f8b400;
+            text-decoration: underline;
+        }
+
+        /* Header */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('{{ url_for('static', filename='background.jpg') }}') no-repeat center center/cover;
+            text-align: center;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .cta-btn {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #f8b400;
+            color: black;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            animation: fadeIn 2.5s ease-in-out;
+        }
+
+        .cta-btn:hover {
+            background: #ffcc00;
+            transform: scale(1.1);
+        }
+
+        /* Circulars Section */
+        .circulars {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            margin: 50px auto;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .circulars h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .circulars ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .circulars li {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .circulars li:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.02);
+        }
+
+        .circulars h3 {
+            font-size: 1.5rem;
+            color: #f8b400;
+        }
+
+        .circular-role {
+            font-size: 14px;
+            color: #ffcc00;
+            font-style: italic;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            margin-top: 50px;
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">Stakeholder Management</div>
+        <ul>
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('signup') }}">Signup</a></li>
+            <li><a href="{{ url_for('admin_login') }}">Admin Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <h1>Welcome to the Stakeholder Management System</h1>
+        <p>Providing a seamless platform for feedback and communication</p>
+        <button class="cta-btn" onclick="location.href='{{ url_for('signup') }}'">Join Now</button>
+    </header>
+
+    <!-- Circulars Section -->
+    <section class="circulars">
+        <h2>Latest Circulars</h2>
+        {% if circulars %}
+            <ul>
+                {% for circular in circulars %}
+                    <li>
+                        <span class="circular-role">{{ circular.role }}</span>
+                        <h3>{{ circular.title }}</h3>
+                        <p>{{ circular.content }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No circulars available.</p>
+        {% endif %}
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Stakeholder Management System. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
